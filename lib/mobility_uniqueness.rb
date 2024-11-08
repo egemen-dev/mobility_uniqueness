@@ -8,7 +8,7 @@ module MobilityUniqueness
       opitons = args.extract_options!
 
       before_validation do
-        error_message = opitons[:error_message] || 'violates uniqueness constraint'
+        message = opitons[:message] || 'violates uniqueness constraint'
 
         self.current_locales&.each do |locale|
           args.each do |attr|
@@ -32,7 +32,7 @@ module MobilityUniqueness
                         count.zero?
                       end
 
-            self.errors.add(:"#{attr}_#{locale}", error_message) unless passed
+            self.errors.add(:"#{attr}_#{locale}", message) unless passed
           end
         end
       end
