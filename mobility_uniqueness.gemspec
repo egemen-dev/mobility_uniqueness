@@ -22,14 +22,14 @@ Gem::Specification.new do |spec|
     `KeyValue` backend to query translations and check for duplicates.
   DESC
 
-  spec.homepage = "https://github.com/egemen-dev"
+  spec.homepage = "https://github.com/egemen-dev/mobility_uniqueness"
   spec.license = "MIT"
   spec.required_ruby_version = ">= 3.0.0"
 
   spec.metadata["allowed_push_host"] = "TODO: Set to your gem server 'https://example.com'"
 
   spec.metadata["homepage_uri"] = spec.homepage
-  spec.metadata["source_code_uri"] = spec.homepage
+  spec.metadata["source_code_uri"] = 'https://github.com/egemen-dev/mobility_uniqueness'
   spec.metadata["changelog_uri"] = spec.homepage
 
   # Specify which files should be added to the gem when it is released.
