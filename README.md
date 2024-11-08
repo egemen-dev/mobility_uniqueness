@@ -3,7 +3,7 @@
 Mobility Uniqueness is a Ruby gem that extends the [Mobility](https://github.com/shioyama/mobility) gem by enabling uniqueness validation on translated attributes across multiple locales. With this gem, you can validate the uniqueness of translations on attributes in ActiveRecord models, ensuring consistency and preventing duplicate entries in different languages. It's designed to work seamlessly with **Mobility's default :key_value backend**, integrating directly into your model validations.
 
 ## Methods
-* `validates_uniqueness_of_translated(*args, error_message: 'custom message')` - Validates that the specified attributes are unique across all locales
+* `validates_uniqueness_of_translated(*args, message: 'custom message')` - Validates that the specified attributes are unique across all locales
 
 Default error message is _'violates uniqueness constraint'_ if the error message is not specified.
 
@@ -32,7 +32,7 @@ class Book < ApplicationRecord
   translates :name,        type: :string
   translates :description, type: :text
 
-  validates_uniqueness_of_translated :name, :description, error_message: 'custom message'
+  validates_uniqueness_of_translated :name, :description, message: 'custom message'
 end
 ```
 
@@ -46,8 +46,8 @@ class Book < ApplicationRecord
   translates :name,        type: :string
   translates :description, type: :text
 
-  validates_uniqueness_of_translated :name,        error_message: 'name is not unique'
-  validates_uniqueness_of_translated :description, error_message: 'description should be unique'
+  validates_uniqueness_of_translated :name,        message: 'name is not unique'
+  validates_uniqueness_of_translated :description, message: 'description should be unique'
 end
 ```
 
