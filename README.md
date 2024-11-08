@@ -15,7 +15,7 @@ Default error message is _'violates uniqueness constraint'_ if the error message
 class Book < ApplicationRecord
   extend Mobility
 
-  translates :name,        type: :string
+  translates :name, type: :string
   translates :description, type: :text
 
   validates_uniqueness_of_translated :name, :description
@@ -29,7 +29,7 @@ You can customize the error message for all:
 class Book < ApplicationRecord
   extend Mobility
 
-  translates :name,        type: :string
+  translates :name, type: :string
   translates :description, type: :text
 
   validates_uniqueness_of_translated :name, :description, message: 'custom message'
@@ -43,7 +43,7 @@ Specify different error messages per attribute for more granular feedback:
 class Book < ApplicationRecord
   extend Mobility
 
-  translates :name,        type: :string
+  translates :name, type: :string
   translates :description, type: :text
 
   validates_uniqueness_of_translated :name,        message: 'name is not unique'
