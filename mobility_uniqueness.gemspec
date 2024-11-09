@@ -5,7 +5,7 @@ require_relative "lib/mobility_uniqueness/version"
 Gem::Specification.new do |spec|
   spec.name = "mobility_uniqueness"
   spec.version = MobilityUniqueness::VERSION
-  spec.authors = ["“egemen_ozturk”"]
+  spec.authors = ["egemen öztürk"]
   spec.email = ["egemenwasd@gmail.com"]
 
   # Short summary for the gem's purpose
