@@ -46,7 +46,7 @@ class Book < ApplicationRecord
   translates :name, type: :string
   translates :description, type: :text
 
-  validates_uniqueness_of_translated :name,        message: 'name is not unique'
+  validates_uniqueness_of_translated :name, message: 'name is not unique'
   validates_uniqueness_of_translated :description, message: 'description should be unique'
 end
 ```
