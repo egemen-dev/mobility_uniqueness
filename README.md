@@ -9,6 +9,12 @@ Default error message is _'violates uniqueness constraint'_ if the error message
 
 ## Usage
 
+Add it to your rails application like so;
+
+```
+bundle add mobility_uniqueness
+```
+
 ### Basic Usage
 
 ```rb
