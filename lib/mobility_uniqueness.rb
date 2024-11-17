@@ -10,29 +10,21 @@ module MobilityUniqueness
       before_validation do
         message = opitons[:message] || 'violates uniqueness constraint'
 
-        Mobility.available_locales.each do |locale|
-          args.each do |attr|
-            passed      = false
-            query_class = self.mobility_query_class(attr)
+        query_classes = args.group_by { |attr| mobility_query_class(attr) }
+        query_classes.each do |query_class, attributes|
+          values = Mobility.available_locales.map do |locale|
+            attributes.map { |attr| send(:"#{attr}_#{locale}") }
+          end.flatten
 
-            next unless query_class
+          count_by_group = query_class.where(locale: Mobility.available_locales)
+                                      .where(translatable_type: self.class.to_s)
+                                      .where(key: attributes, value: values)
+                                      .where.not(translatable_id: id)
+                                      .group(:key, :locale, :value)
+                                      .count
 
-            records = query_class
-                        .where(locale: locale)
-                        .where(translatable_type: self.class.to_s)
-                        .where(key: attr, value: send(:"#{attr}_#{locale}"))
-
-            count = records.count
-
-            passed = if self.persisted?
-                        only_one_record = count <= 1
-                        belongs_to_self = count.zero? || id == records.first.translatable_id
-                        only_one_record && belongs_to_self
-                      else
-                        count.zero?
-                      end
-
-            self.errors.add(:"#{attr}_#{locale}", message) unless passed
+          count_by_group.each do |(key, locale, _value), count|
+            errors.add(:"#{key}_#{locale}", message) unless count.zero?
           end
         end
       end
@@ -46,7 +38,7 @@ module MobilityUniqueness
       string: Mobility::Backends::ActiveRecord::KeyValue::StringTranslation,
       text: Mobility::Backends::ActiveRecord::KeyValue::TextTranslation
     }
-    
+
     translations[attr_type]
   end
 end
