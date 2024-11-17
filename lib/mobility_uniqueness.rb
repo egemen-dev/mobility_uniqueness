@@ -10,7 +10,7 @@ module MobilityUniqueness
       before_validation do
         message = opitons[:message] || 'violates uniqueness constraint'
 
-        self.current_locales&.each do |locale|
+        Mobility.available_locales.each do |locale|
           args.each do |attr|
             passed      = false
             query_class = self.mobility_query_class(attr)
@@ -37,16 +37,6 @@ module MobilityUniqueness
         end
       end
     end
-  end
-
-  def current_locales
-    locales = []
-
-    Mobility.available_locales.each do |locale|
-      locales << locale if self.send("language_code_#{locale}")&.present?
-    end
-
-    locales
   end
 
   def mobility_query_class(attr)
