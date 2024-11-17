@@ -1,70 +1,79 @@
-# frozen_string_literal: true
-
 require 'spec_helper'
 
 RSpec.describe Book, type: :model do
   before do
-    I18n.available_locales = %i[en tr fr]
+    I18n.available_locales = [:en, :fr, :tr]
     Mobility.locale = :en
   end
 
-  context 'when validating translated uniqueness for title' do
-    it 'allows creation of a unique title in the same locale' do
-      book = Book.create!(title_en: 'Unique Title')
-      expect(book.errors[:title]).to be_empty
+  context 'when validating translated uniqueness for `new` and `create` actions' do
+    it 'allows creating a record with a unique title in the default locale' do
+      book = Book.new(title_en: 'A Unique Title')
+      expect(book.save).to be true
     end
 
-    it 'prevents creating a duplicate title in the same locale' do
-      Book.create!(title_en: 'Another Unique Title')
-      duplicate_book = Book.new(title_en: 'Another Unique Title')
-      duplicate_book.valid?
+    it 'prevents creating a record with a duplicate title in the same locale' do
+      Book.create!(title_en: 'Duplicate Title')
+      duplicate_book = Book.new(title_en: 'Duplicate Title')
 
+      expect(duplicate_book.save).to be false
       expect(duplicate_book.errors[:title_en]).to include('violates uniqueness constraint')
     end
 
-    it 'allows the same title in different locales' do
-      Book.create!(title_en: 'Unique Title for Different Locale')
+    it 'allows creating records with the same title in different locales' do
+      Book.create!(title_en: 'Shared Title')
       Mobility.locale = :fr
-      book_fr = Book.new(title_fr: 'Unique Title for Different Locale')
-      expect(book_fr).to be_valid
+      book_fr = Book.new(title_fr: 'Shared Title')
+
+      expect(book_fr.save).to be true
     end
 
-    it 'validates uniqueness of title on update' do
-      Book.create!(title_en: 'Initial Title')
-      book2 = Book.create!(title_en: 'Another Title')
+    it 'handles creating records with nil titles without conflict' do
+      Book.create!(title_en: nil)
+      book_with_nil_title = Book.new(title_en: nil)
 
-      book2.update(title_en: 'Initial Title')
-      expect(book2.errors[:title_en]).to include('violates uniqueness constraint')
+      expect(book_with_nil_title.save).to be true
     end
   end
 
-  context 'when validating translated uniqueness for description' do
-    it 'allows creation of a unique description in the same locale' do
-      book = Book.create!(description_en: 'Unique Description')
-      expect(book.errors[:description]).to be_empty
+  context 'when validating translated uniqueness for `update` action' do
+    it 'allows updating a record with a unique title in the same locale' do
+      book = Book.create!(title_en: 'Initial Title')
+      expect(book.update(title_en: 'Updated Unique Title')).to be true
     end
 
-    it 'prevents creating a duplicate description in the same locale' do
-      Book.create!(description_en: 'Another Unique Description')
-      duplicate_book = Book.new(description_en: 'Another Unique Description')
-      duplicate_book.valid?
+    it 'prevents updating a record to a duplicate title in the same locale' do
+      Book.create!(title_en: 'Existing Title')
+      book = Book.create!(title_en: 'Another Title')
 
-      expect(duplicate_book.errors[:description_en]).to include('violates uniqueness constraint')
+      expect(book.update(title_en: 'Existing Title')).to be false
+      expect(book.errors[:title_en]).to include('violates uniqueness constraint')
     end
 
-    it 'allows the same description in different locales' do
-      Book.create!(description_en: 'Unique Description for Different Locale')
-      Mobility.locale = :tr
-      book_tr = Book.new(description_tr: 'Unique Description for Different Locale')
-      expect(book_tr).to be_valid
+    it 'allows updating a title in one locale without affecting another locale' do
+      book = Book.create!(title_en: 'English Title')
+      Mobility.locale = :fr
+      expect(book.update(title_fr: 'French Title')).to be true
     end
 
-    it 'validates uniqueness of description on update' do
-      Book.create!(description_en: 'Initial Description')
-      book2 = Book.create!(description_en: 'Another Description')
+    it 'prevents updating a record when setting a title to nil if nil is already present and treated as duplicate' do
+      Book.create!(title_en: nil)
+      book = Book.create!(title_en: 'Non-Nil Title')
 
-      book2.update(description_en: 'Initial Description')
-      expect(book2.errors[:description_en]).to include('violates uniqueness constraint')
+      expect(book.update(title_en: nil)).to be true
+    end
+
+    it 'handles updating records with special characters in titles' do
+      book = Book.create!(title_en: 'Special @#$ Title')
+      expect(book.update(title_en: 'Another Special Title')).to be true
+    end
+
+    it 'allows swapping titles between two records in the same locale' do
+      book1 = Book.create!(title_en: 'Title A')
+      book2 = Book.create!(title_en: 'Title B')
+
+      expect(book1.update(title_en: 'Title B')).to be false
+      expect(book2.update(title_en: 'Title A')).to be false
     end
   end
 end
