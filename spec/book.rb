@@ -21,8 +21,7 @@ end
 class Book < ActiveRecord::Base
   extend Mobility
 
-  translates :title, type: :string
-  translates :description, type: :text
+  translates :title, :name, type: :string
 
-  validates_uniqueness_of_translated :title, :description
+  validates_uniqueness_of_translated :title, :name
 end

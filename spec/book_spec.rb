@@ -39,6 +39,56 @@ RSpec.describe Book, type: :model do
         book = Book.new(title_en: 'Title A', title_fr: 'Title B')
         expect(book).to be_invalid
       end
+
+      it 'allows different records to have the same values for the same keys in different locales' do
+        book1 = Book.create!(title_en: 'Unique Title', title_fr: 'Titre Unique')
+        book2 = Book.create!(title_en: 'Titre Unique', title_fr: 'Unique Title')
+      
+        expect(book2.valid?).to be_truthy
+        expect(book2.save).to be_truthy
+      end
+
+      it 'prevents different records from having the same values for the same keys in the same locale' do
+        Book.create!(title_en: 'Duplicate Title')
+        book = Book.new(title_en: 'Duplicate Title')
+      
+        expect(book.valid?).to be_falsey
+        expect(book.errors[:title_en]).to include('violates uniqueness constraint')
+      end
+
+      it 'allows the same value for different locales across records' do
+        Book.create!(title_en: 'Shared Value')
+        book = Book.new(title_fr: 'Shared Value')
+      
+        expect(book.valid?).to be_truthy
+        expect(book.save).to be_truthy
+      end
+
+      it 'allows the same value for title and name attributes across different fields' do
+        # Creating the book with same values for `title` and `name`
+        book = Book.create!(title_en: 'Common Title', name_en: 'Common Title')
+
+        # Ensuring no validation errors for both fields
+        expect(book.errors[:title_en]).to be_empty
+        expect(book.errors[:name_en]).to be_empty
+        expect(book.title_en).to eq('Common Title')
+        expect(book.name_en).to eq('Common Title')
+      end
+
+      it 'prevents creating a duplicate title and name with the same value across different records' do
+        # Creating a book with the same title and name
+        Book.create!(title_en: 'a', name_en: 'a', title_fr: 'a', name_fr: 'a')
+        
+        # Attempting to create a new book with the same title and name
+        duplicate_book = Book.new(title_en: 'a', name_en: 'a', title_fr: 'a', name_fr: 'a')
+        duplicate_book.valid?
+
+        # Check for uniqueness constraint violation
+        expect(duplicate_book.errors[:title_en]).to include('violates uniqueness constraint')
+        expect(duplicate_book.errors[:name_en]).to include('violates uniqueness constraint')
+        expect(duplicate_book.errors[:title_fr]).to include('violates uniqueness constraint')
+        expect(duplicate_book.errors[:name_fr]).to include('violates uniqueness constraint')
+      end
     end
 
     describe 'when updating records' do
