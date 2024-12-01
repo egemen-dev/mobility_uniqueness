@@ -21,10 +21,9 @@ bundle add mobility_uniqueness
 class Book < ApplicationRecord
   extend Mobility
 
-  translates :name, type: :string
-  translates :description, type: :text
+  translates :title, type: :string
 
-  validates_uniqueness_of_translated :name
+  validates_uniqueness_of_translated :title
 end
 ```
 
@@ -35,10 +34,9 @@ You can customize the error message:
 class Book < ApplicationRecord
   extend Mobility
 
-  translates :name, type: :string
-  translates :description, type: :text
+  translates :title, type: :string
 
-  validates_uniqueness_of_translated :name, message: 'custom message'
+  validates_uniqueness_of_translated :title, message: 'custom message'
 end
 ```
 

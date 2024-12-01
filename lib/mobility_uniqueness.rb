@@ -29,7 +29,7 @@ module MobilityUniqueness
                         .count
 
             # If there are conflicts, add a validation error for the key
-            conflicts.each do |(key, _locale, _value), count|
+            conflicts.each do |(key, locale, _value), count|
               errors.add(:"#{key}_#{locale}", message) unless count.zero?
             end
           end

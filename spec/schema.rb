@@ -5,7 +5,7 @@ ActiveRecord::Schema.define do
 
   create_table :books, force: true do |t|
     t.string :title
-    t.text :description
+    t.string :name
 
     t.timestamps
   end

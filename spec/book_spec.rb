@@ -63,6 +63,32 @@ RSpec.describe Book, type: :model do
         expect(book.valid?).to be_truthy
         expect(book.save).to be_truthy
       end
+
+      it 'allows the same value for title and name attributes across different fields' do
+        # Creating the book with same values for `title` and `name`
+        book = Book.create!(title_en: 'Common Title', name_en: 'Common Title')
+
+        # Ensuring no validation errors for both fields
+        expect(book.errors[:title_en]).to be_empty
+        expect(book.errors[:name_en]).to be_empty
+        expect(book.title_en).to eq('Common Title')
+        expect(book.name_en).to eq('Common Title')
+      end
+
+      it 'prevents creating a duplicate title and name with the same value across different records' do
+        # Creating a book with the same title and name
+        Book.create!(title_en: 'a', name_en: 'a', title_fr: 'a', name_fr: 'a')
+        
+        # Attempting to create a new book with the same title and name
+        duplicate_book = Book.new(title_en: 'a', name_en: 'a', title_fr: 'a', name_fr: 'a')
+        duplicate_book.valid?
+
+        # Check for uniqueness constraint violation
+        expect(duplicate_book.errors[:title_en]).to include('violates uniqueness constraint')
+        expect(duplicate_book.errors[:name_en]).to include('violates uniqueness constraint')
+        expect(duplicate_book.errors[:title_fr]).to include('violates uniqueness constraint')
+        expect(duplicate_book.errors[:name_fr]).to include('violates uniqueness constraint')
+      end
     end
 
     describe 'when updating records' do
