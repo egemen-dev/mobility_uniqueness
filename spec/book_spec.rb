@@ -39,6 +39,30 @@ RSpec.describe Book, type: :model do
         book = Book.new(title_en: 'Title A', title_fr: 'Title B')
         expect(book).to be_invalid
       end
+
+      it 'allows different records to have the same values for the same keys in different locales' do
+        book1 = Book.create!(title_en: 'Unique Title', title_fr: 'Titre Unique')
+        book2 = Book.create!(title_en: 'Titre Unique', title_fr: 'Unique Title')
+      
+        expect(book2.valid?).to be_truthy
+        expect(book2.save).to be_truthy
+      end
+
+      it 'prevents different records from having the same values for the same keys in the same locale' do
+        Book.create!(title_en: 'Duplicate Title')
+        book = Book.new(title_en: 'Duplicate Title')
+      
+        expect(book.valid?).to be_falsey
+        expect(book.errors[:title_en]).to include('violates uniqueness constraint')
+      end
+
+      it 'allows the same value for different locales across records' do
+        Book.create!(title_en: 'Shared Value')
+        book = Book.new(title_fr: 'Shared Value')
+      
+        expect(book.valid?).to be_truthy
+        expect(book.save).to be_truthy
+      end
     end
 
     describe 'when updating records' do
