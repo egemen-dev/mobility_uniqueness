@@ -24,5 +24,5 @@ class Book < ActiveRecord::Base
   translates :title, type: :string
   translates :description, type: :text
 
-  validates_uniqueness_of_translated :title, :description
+  validates_uniqueness_of_translated :title
 end

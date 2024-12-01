@@ -1,9 +1,9 @@
 # Mobility Uniqueness
 
-Mobility Uniqueness is a Ruby gem that extends the [Mobility](https://github.com/shioyama/mobility) gem by enabling uniqueness validation on translated attributes across multiple locales. With this gem, you can validate the uniqueness of translations on attributes in ActiveRecord models, ensuring consistency and preventing duplicate entries in different languages. It's designed to work seamlessly with **Mobility's default :key_value backend**, integrating directly into your model validations.
+Mobility Uniqueness is a Ruby gem that extends the [Mobility](https://github.com/shioyama/mobility) gem by enabling uniqueness validation on translated string attributes across multiple locales. With this gem, you can validate the uniqueness of translations on attributes in ActiveRecord models, ensuring consistency and preventing duplicate entries in different languages. It's designed to work seamlessly with **Mobility's default :key_value backend**, integrating directly into your model validations.
 
 ## Methods
-* `validates_uniqueness_of_translated(*args, message: 'custom message')` - Validates that the specified attributes are unique across all locales
+* `validates_uniqueness_of_translated(*args, message: 'custom message')` - Validates that the specified string attributes are unique across all locales
 
 Default error message is _'violates uniqueness constraint'_ if the error message is not specified.
 
@@ -24,13 +24,13 @@ class Book < ApplicationRecord
   translates :name, type: :string
   translates :description, type: :text
 
-  validates_uniqueness_of_translated :name, :description
+  validates_uniqueness_of_translated :name
 end
 ```
 
 ### Custom Error Messages
 
-You can customize the error message for all:
+You can customize the error message:
 ```rb
 class Book < ApplicationRecord
   extend Mobility
@@ -38,22 +38,7 @@ class Book < ApplicationRecord
   translates :name, type: :string
   translates :description, type: :text
 
-  validates_uniqueness_of_translated :name, :description, message: 'custom message'
-end
-```
-
-### Attribute-Specific Error Messages
-
-Specify different error messages per attribute for more granular feedback:
-```rb
-class Book < ApplicationRecord
-  extend Mobility
-
-  translates :name, type: :string
-  translates :description, type: :text
-
-  validates_uniqueness_of_translated :name, message: 'name is not unique'
-  validates_uniqueness_of_translated :description, message: 'description should be unique'
+  validates_uniqueness_of_translated :name, message: 'custom message'
 end
 ```
 
